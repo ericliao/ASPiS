@@ -7,17 +7,17 @@ The ASPiS project has enhanced the access management functionality provided by [
 
 ## Components
 
-### ASPIS
-The ASPiS iRODS microservice which gets the Shibboleth attributes of the user and checks it against the object permissions to decide whether to allow/deny access.
-
-### obf
-The password obfuscation module for PHP to support Shibboleth authentication/authorization.
+### web2+
+The PHP based iRODS Web Browser modified to allow access to iRODS using Shibboleth.
 
 ### prods
 The PHP-iRODS API (from [extrods](http://code.google.com/p/extrods/) modified to support Shibboleth authentication/authorization.
 
-### web2+
-The PHP based iRODS Web Browser modified to allow access to iRODS using Shibboleth.
+### obf
+The password obfuscation module for PHP to support Shibboleth authentication/authorization.
+
+### ASPIS
+The ASPiS iRODS microservice which gets the Shibboleth attributes of the user and checks it against the object permissions to decide whether to allow/deny access.
 
 ### aspis.irb
 Example iRODS access rules incorporating the ASPIS Shibboleth microservice.
