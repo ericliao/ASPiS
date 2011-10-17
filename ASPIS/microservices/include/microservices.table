@@ -1,0 +1,10 @@
+
+/* ASPiS module microservices */
+
+/* Service name			              # args	  Service function */
+{"msiDebugPrint",                       2,        (funcPtr)msiDebugPrint},
+{"msiIngestAttributeToREI",             1,        (funcPtr)msiIngestAttributeToREI},
+{"msiGetShibAttributes",                2,        (funcPtr)msiGetShibAttributes},
+{"msiGetObjectPermissions",             6,        (funcPtr)msiGetObjectPermissions},
+{"msiCheckPermissions",                 6,        (funcPtr)msiCheckPermissions},
+{"msiEnforceAuthorizationDecision",     5,        (funcPtr)msiEnforceAuthorizationDecision},

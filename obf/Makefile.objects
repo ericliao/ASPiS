@@ -1,0 +1,10 @@
+obf.lo: /opt/PHP/php-5.2.8/ext/obf/obf.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/opt/PHP/php-5.2.8/ext/obf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /opt/PHP/php-5.2.8/ext/obf/obf.c -o obf.lo 
+md5c.lo: /opt/PHP/php-5.2.8/ext/obf/md5c.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/opt/PHP/php-5.2.8/ext/obf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /opt/PHP/php-5.2.8/ext/obf/md5c.c -o md5c.lo 
+$(phplibdir)/obf.la: ./obf.la
+	$(LIBTOOL) --mode=install cp ./obf.la $(phplibdir)
+
+./obf.la: $(shared_objects_obf) $(OBF_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_obf) $(OBF_SHARED_LIBADD)
+

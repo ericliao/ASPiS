@@ -1,0 +1,8 @@
+Name:		ASPiS Microservices
+Brief:		
+Description:    Microservices to Enable Shibboleth-Prods Integration for ASPiS
+Dependencies:
+Enabled:	yes
+Creator:	Eric Liao, King's College London
+Created:	March 2009
+License:	BSD

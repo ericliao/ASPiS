@@ -1,0 +1,78 @@
+# ASPiS Rules for Shibboleth Authorization in iRODS
+#
+# --------------------------------------------------------------------------
+# The following are rules for data object operation
+# 1) acSetRescSchemeForCreate - This is the preprossing rule for setting
+# the resource selection scheme when creating a data object which is used 
+# by the put, copy and replicate operations. Currently, three preprocessing 
+# functions can be used by this rule:
+#    msiSetNoDirectRescInp(rescList) - sets a list of resources that cannot
+#      be used by a normal user directly. More than one resources can be 
+#      input using the character "%" as seperator. e.g., resc1%resc2%resc3.  
+#      This function is optional, but if used, should be the first function
+#      to execute because it screens the resource input. 
+#    msiSetDefaultResc(defaultRescList, optionStr) - sets the default resource
+#      and query resource metadata for the subsequent use. This function
+#      is mandatory even no defaultResc is specified (null) and should be
+#      executed right after the screening function msiSetNoDirectRescInp.
+#      defaultResc - the resource to use if no resource is input. A "null"
+#        means there is no defaultResc. More than one resources can be
+#      input using the character "%" as seperator.
+#      optionStr - Can be "forced", "preferred" or "null". A "forced" input 
+#      means the defaultResc will be used regardless of the user input. 
+#      The forced action only apply to to users with normal privilege.
+#    msiSetRescSortScheme(sortScheme) - set the scheme for 
+#      for selecting the best resource to use when creating a data object.  
+#      sortScheme - The sorting scheme. Valid scheme are "default", 
+#        "random" and "byRescType". The "byRescType" scheme will put the
+#        cache class of resource on the top of the list. The scheme 
+#        "random" and "byRescType" can be applied in sequence. e.g.,
+#        msiSetRescSortScheme(random)##msiSetRescSortScheme(byRescType)
+#        will select randomly a cache class resource and put it on the
+#        top of the list.
+
+# if in the home collection, bypass the shibboleth authorization
+acSetRescSchemeForCreate|$objPath1 like /$rodsZoneProxy/home/$userNameClient/*|msiSetDefaultResc(resc.eric-desktop,null)|nop
+acSetRescSchemeForCreate||acGetShibAuthorization(acSetRescSchemeForCreate,$userNameClient)##msiSetDefaultResc(resc.eric-desktop,null)|nop##nop
+
+#
+# 2) acPreprocForDataObjOpen - Preprocess rule for opening an existing
+# data object which is used by the get, copy and replicate operations. 
+# Currently, four preprocessing functions can be used individually or
+# in sequence by this rule.
+#    msiSetDataObjPreferredResc(preferredRescList) - set the preferred 
+#      resources of the opened object. The copy stored in this preferred 
+#      resource will be picked if it exists. More than one resources can be
+#      input using the character "%" as seperator. e.g., resc1%resc2%resc3.
+#      The most preferred resource should be at the top of the list.
+#    msiSetDataObjAvoidResc(avoidResc) - set the resource to avoid when
+#      opening an object. The copy stored in this resource will not be picked
+#      unless this is the only copy.
+#    msiSortDataObj(sortingScheme) - Sort the copies of the data object using
+#      this scheme. Currently, "random" sorting scheme is supported.
+#    msiStageDataObj(cacheResc) - stage a copy of the data object in the 
+#      cacheResc before opening the data object. 
+
+# if in the home collection, bypass the shibboleth authorization
+acPreprocForDataObjOpen|$objPath1 like /$rodsZoneProxy/home/$userNameClient/*|msiSortDataObj(random)|nop
+acPreprocForDataObjOpen||acGetShibAuthorization(acPreprocForDataObjOpen, $userNameClient)##msiSortDataObj(random)|nop##nop
+
+# 8) acDataDeletePolicy - This rule set the policy for deleting data objects.
+# Only one function can be called:
+#    msiDeleteDisallowed() - Disallow the deletion of the data object. 
+# Examples:
+#    acDataDeletePolicy|$objPath like /foo/bar/*|msiDeleteDisallowed|nop 
+#      this rule prevents the deletion of any data objects or collections
+#      beneath the collection /foo/bar/
+#    acDataDeletePolicy|$rescName == demoResc8|msiDeleteDisallowed|nop
+#      this rule prevents the deletion of any data objects that are stored
+#      in the demoResc8 resource.
+
+# if in the home collection, bypass the shibboleth authorization
+acDataDeletePolicy|$objPath1 like /$rodsZoneProxy/home/$userNameClient/*|nop|nop
+acDataDeletePolicy||acGetShibAuthorization(acDataDeletePolicy, $userNameClient)|msiDeleteDisallowed
+
+# Generic Shibboleth authorization rules
+acGetShibAuthorization(*rule, *user)||acGetAuthorizationInfo(*rule, *user)|nop
+acGetAuthorizationInfo(*rule, *user)||msiGetShibAttributes(*user, *attributes)##msiGetObjectPermissions(*rule, *attributes, $objPath1, *readPerm, *updatePerm, *deletePerm)##acCheckPermissions(*rule, *attributes, *readPerm, *updatePerm, *deletePerm)|nop##nop##nop
+acCheckPermissions(*rule, *attributes, *readPerm, *updatePerm, *deletePerm)||msiCheckPermissions(*attributes, *readPerm, *updatePerm, *deletePerm, *rule, *decision)##msiEnforceAuthorizationDecision($userNameClient, $objPath1, *rule, *decision, log_file)|nop##nop
