@@ -1,10 +1,9 @@
 # ASPiS
+Architecture for a Shibboleth-Protected iRODS System
 
-ASPiS aimed to address two complementary aspects of access management in iRODS:
+## What is this?
 
-* Access authorisation (AuthZ) that is based on user roles or attributes, managed in a distributed/federated manner, rather than on locally managed user lists, where access rights can be defined for individual files and modes of access (e.g. create, read, update, delete).
-
-* Capture of audit and provenance information that tracks access to resources.
+The ASPiS project has enhanced the access management functionality provided by [iRODS (Rule-Oriented Data management System)](http://www.irods.org), an open source data grid middleware system developed at the San Diego Supercomputer Center as the successor to the widely used Storage Resource Broker. Specifically, the project integrates Shibboleth-based access management with iRODS, which will provide a more scalable, flexible and user-friendly means of implementing authentication and authorisation, and allow iRODS based data grids to be deployed within the UK Access Management Federation
 
 ## Components
 
